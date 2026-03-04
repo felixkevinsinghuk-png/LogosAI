@@ -1,0 +1,22 @@
+version: '3.8'
+
+services:
+  logosai:
+    build: .
+    container_name: logosai-app
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./data:/app/data
+      - ./database:/app/database
+      - ./vector_store:/app/vector_store
+      - ./models:/app/models
+      - ./server.log:/app/server.log
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    environment:
+      - PYTHONUNBUFFERED=1
