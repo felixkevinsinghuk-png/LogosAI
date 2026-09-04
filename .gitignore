@@ -1,4 +1,4 @@
-# Python
+# ── Python ────────────────────────────────────────────────
 __pycache__/
 *.py[cod]
 *$py.class
@@ -24,33 +24,62 @@ wheels/
 venv/
 venv.bak/
 ENV/
+
+# ── Secrets ───────────────────────────────────────────────
 .env
 
-# Project Specific Assets (Too large for GitHub)
+# ── OS / IDEs ─────────────────────────────────────────────
+.DS_Store
+.vscode/
+.idea/
+.cursor/
+
+# ── Docker ────────────────────────────────────────────────
+.dockerignore
+
+# ── Logs & Caches ─────────────────────────────────────────
+server.log
+*.log
+verification_result.txt
+.pytest_cache/
+
+# ── Large Project Data (not for GitHub) ───────────────────
 data/
 database/
 vector_store/
 models/
 *.gguf
-*.json
 *.csv
-server.log
-verification_result.txt
+embeddings/
 
-# IDEs and Tools
-.vscode/
-.idea/
-.DS_Store
-.cursor/
-
-# Docker
-.dockerignore
-
-# Training Assets
+# ── Training Artifacts ────────────────────────────────────
 training/adapters/
 training/logosai-fused/
+training/dataset.jsonl
 
-# Large deployment artifacts
+# ── Deployment Artifacts ──────────────────────────────────
 *.zip
 cpanel_deploy/
 
+# ── Scratch Notes & Dev Docs (not project code) ───────────
+bug_fix.md
+correction.md
+fix.md
+work.md
+working.txt
+drawbacks.txt
+gform.md
+UI.md
+backend.md
+Ways.md
+Changes.md
+conversation.md
+reeferences.md
+Workflow.md
+RESUME.md
+model_info.txt
+
+# ── Root-level test scripts (use tests/ folder instead) ───
+test_conversations.py
+test_group_capacity.py
+test_group_chat.py
