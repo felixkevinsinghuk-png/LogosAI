@@ -4,29 +4,32 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>LogosAI — Bible Contextual Assistant</title>
-  <meta name="description"
-    content="A locally-running AI Bible assistant powered by Mistral-7B. Get contextual explanations of Bible passages with original Hebrew and Greek language meaning." />
+  <title>RhemaLight AI — AI-Powered Bible Study &amp; Search</title>
+  <meta name="description" content="RhemaLight AI is your intelligent companion for Bible study, sermon preparation, and spiritual discovery. Search scriptures with AI-powered insights." />
+  <link rel="icon" href="data:," />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link
-    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,600;1,400&display=swap"
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;1,400&display=swap"
     rel="stylesheet" />
-  <link rel="stylesheet" href="/static/style.css" />
+  <link rel="stylesheet" href="/static/style.css?v=2.3" />
 </head>
 
 <body>
 
-  <!-- ── Background decoration ─────────────────────────── -->
+  <!-- ── Background Elements ──────────────────────────────────── -->
+  <div class="bg-mesh"></div>
   <div class="bg-orb bg-orb--1"></div>
   <div class="bg-orb bg-orb--2"></div>
   <div class="bg-orb bg-orb--3"></div>
 
-  <!-- ── App Shell ──────────────────────────────────────── -->
-  <div class="app-shell">
+  <!-- ── App Shell (Hidden until Auth) ─────────────────────────── -->
+  <div class="app-shell" id="app-shell" style="display: none;">
 
-    <!-- ── Sidebar ──────────────────────────────────────── -->
-    <aside class="sidebar">
+    <!-- ── Sidebar ────────────────────────────────────────────── -->
+    <aside class="sidebar" id="sidebar">
+
+      <!-- Logo -->
       <div class="sidebar__logo">
         <div class="logo-icon">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
@@ -35,250 +38,970 @@
             <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" />
           </svg>
         </div>
-        <span class="logo-text">LogosAI</span>
+        <span class="logo-text">RhemaLight AI</span>
       </div>
 
+      <!-- Ask AI CTA -->
+      <button class="ask-ai-btn" id="ask-ai-btn" onclick="navigateTo('chat')">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+          stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16">
+          <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" />
+          <circle cx="12" cy="12" r="10" />
+          <line x1="12" y1="17" x2="12.01" y2="17" />
+        </svg>
+        Ask AI
+        <kbd>⌘K</kbd>
+      </button>
+
+      <!-- Primary Navigation -->
       <nav class="sidebar__nav">
-        <div class="nav-label">Explore</div>
-        <button class="nav-item nav-item--active" id="btn-new-chat" onclick="newChat()">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-            stroke-linecap="round" stroke-linejoin="round" width="16" height="16">
-            <line x1="12" y1="5" x2="12" y2="19" />
-            <line x1="5" y1="12" x2="19" y2="12" />
-          </svg>
-          New Conversation
+        <div class="nav-section-label">Main</div>
+
+        <button class="nav-item nav-item--active" id="nav-home" onclick="navigateTo('home')" data-view="home">
+          <span class="nav-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+          </span>
+          Home
         </button>
 
-        <div class="nav-label" style="margin-top: 2rem;">Community</div>
-        <div class="group-actions-container">
-          <div class="community-tabs">
-            <button class="tab-btn" id="tab-create" onclick="switchCommunityStage('create')">Create</button>
-            <button class="tab-btn" id="tab-join" onclick="switchCommunityStage('join')">Join</button>
-          </div>
+        <button class="nav-item" id="nav-bible" onclick="navigateTo('bible')" data-view="bible">
+          <span class="nav-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+          </span>
+          Read Bible
+        </button>
 
-          <div class="community-expand-wrapper" id="community-expand-wrapper">
-            <div class="community-form-inline">
-              <!-- Create Stage -->
-              <div id="community-stage-create" class="community-stage-inline" style="display: none;">
-                <div class="floating-group">
-                  <input type="text" id="create-name" required placeholder=" ">
-                  <label for="create-name">Your Display Name</label>
-                </div>
-                <div class="floating-group">
-                  <input type="text" id="create-group-name" required placeholder=" ">
-                  <label for="create-group-name">Group Name</label>
-                </div>
-                <button class="modal-btn modal-btn--premium" id="btn-submit-create" onclick="submitCreateGroup()">
-                  <span>Create Room</span>
-                  <div class="btn-shine"></div>
-                </button>
-              </div>
+        <button class="nav-item" id="nav-plans" onclick="navigateTo('plans')" data-view="plans">
+          <span class="nav-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+          </span>
+          Reading Plans
+        </button>
 
-              <!-- Join Stage -->
-              <div id="community-stage-join" class="community-stage-inline" style="display: none;">
-                <div class="floating-group">
-                  <input type="text" id="join-name" required placeholder=" ">
-                  <label for="join-name">Your Display Name</label>
-                </div>
-                <div class="floating-group">
-                  <input type="text" id="join-code" required placeholder=" " maxlength="6" class="code-input-field">
-                  <label for="join-code">Room Code</label>
-                </div>
-                <div id="join-error" class="modal-error" style="display:none;"></div>
-                <button class="modal-btn modal-btn--premium" id="btn-submit-join" onclick="submitJoinGroup()">
-                  <span>Join Room</span>
-                  <div class="btn-shine"></div>
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
+        <button class="nav-item" id="nav-accountability" onclick="navigateTo('accountability')" data-view="accountability">
+          <span class="nav-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+          </span>
+          Accountability
+        </button>
+
+        <button class="nav-item" id="nav-library" onclick="navigateTo('library')" data-view="library">
+          <span class="nav-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+          </span>
+          Library
+        </button>
+
+        <button class="nav-item" id="nav-study" onclick="navigateTo('study')" data-view="study">
+          <span class="nav-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          </span>
+          Study Guides
+        </button>
+
+        <button class="nav-item" id="nav-sermon" onclick="navigateTo('sermon')" data-view="sermon">
+          <span class="nav-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg>
+          </span>
+          Sermon Builder
+        </button>
+
+        <button class="nav-item" id="nav-service" onclick="navigateTo('service')" data-view="service">
+          <span class="nav-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+          </span>
+          Service Orders
+        </button>
+
+        <button class="nav-item" id="nav-songs" onclick="navigateTo('songs')" data-view="songs">
+          <span class="nav-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+          </span>
+          Worship Songs
+        </button>
       </nav>
 
-      <div class="sidebar__hints">
-        <div class="nav-label">Try asking</div>
-        <button class="hint-chip" onclick="fillQuestion('What does John 3:16 mean in context?')">John 3:16
-          meaning</button>
-        <button class="hint-chip" onclick="fillQuestion('Explain the Hebrew word for love (H157) in Psalm 23')">Hebrew
-          word for love</button>
-        <button class="hint-chip" onclick="fillQuestion('What is the Greek logos in John 1:1?')">Greek logos in John
-          1</button>
-        <button class="hint-chip" onclick="fillQuestion('Who was Melchizedek and why is he significant?')">Who was
-          Melchizedek?</button>
-        <button class="hint-chip" onclick="fillQuestion('Explain the Sermon on the Mount')">Sermon on the Mount</button>
-      </div>
-
-      <div class="sidebar__footer">
-        <div class="status-badge" id="status-badge">
-          <span class="status-dot" id="status-dot"></span>
-          <span id="status-text">Checking...</span>
+      <!-- Community Section -->
+      <div class="sidebar__community">
+        <div class="nav-section-label">Community</div>
+        <div class="community-tabs">
+          <button class="community-tab" id="tab-create" onclick="switchCommunityStage('create')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Create
+          </button>
+          <button class="community-tab" id="tab-join" onclick="switchCommunityStage('join')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
+            Join
+          </button>
         </div>
-        <div class="model-info">Mistral-7B · Local · Offline</div>
+
+        <div class="community-panel" id="community-panel">
+          <!-- Create Stage -->
+          <div id="stage-create" class="community-stage" style="display:none;">
+            <div class="field-group">
+              <label class="field-label" for="create-name">Your Display Name</label>
+              <input type="text" id="create-name" class="field-input" placeholder="e.g. FELIX" maxlength="30" />
+            </div>
+            <div class="field-group">
+              <label class="field-label" for="create-group-name">Group Name</label>
+              <input type="text" id="create-group-name" class="field-input" placeholder="e.g. Sunday Study" maxlength="40" />
+            </div>
+            <div id="create-error" class="field-error" style="display:none;"></div>
+            <button class="community-btn community-btn--primary" id="btn-submit-create" onclick="submitCreateGroup()">
+              <span id="create-btn-text">Create Room</span>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="14" height="14"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+            </button>
+          </div>
+
+          <!-- Join Stage -->
+          <div id="stage-join" class="community-stage" style="display:none;">
+            <div class="field-group">
+              <label class="field-label" for="join-name">Your Display Name</label>
+              <input type="text" id="join-name" class="field-input" placeholder="e.g. FELIX" maxlength="30" />
+            </div>
+            <div class="field-group">
+              <label class="field-label" for="join-code">Room Code (6 chars)</label>
+              <input type="text" id="join-code" class="field-input field-input--code" placeholder="ABC123" maxlength="6" />
+            </div>
+            <div id="join-error" class="field-error" style="display:none;"></div>
+            <button class="community-btn community-btn--secondary" id="btn-submit-join" onclick="submitJoinGroup()">
+              <span id="join-btn-text">Join Room</span>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="14" height="14"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
+            </button>
+          </div>
+        </div>
       </div>
+
+      <!-- Bottom Nav -->
+      <div class="sidebar__bottom-nav">
+        <!-- Auth Button -->
+        <button class="nav-item" id="nav-auth" onclick="handleAuthClick()">
+          <span class="nav-icon">
+            <svg viewBox="0 0 24 24" fill="none" class="text-secondary" stroke="currentColor" stroke-width="2" width="20" height="20"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          </span>
+          <span id="nav-auth-text">Log In</span>
+        </button>
+        <button class="nav-item" id="nav-history" onclick="navigateTo('history')" data-view="history">
+          <span class="nav-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><path d="M12 8v4l3 3m6-3a9 9 0 1 1-18 0 9 9 0 0 1 18 0z"/></svg>
+          </span>
+          My History
+        </button>
+        <button class="nav-item" id="nav-settings" onclick="navigateTo('settings')" data-view="settings">
+          <span class="nav-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14M19.07 4.93A10 10 0 1 0 4.93 19.07"/></svg>
+          </span>
+          Settings
+        </button>
+        <button class="nav-item" id="nav-help" onclick="navigateTo('help')" data-view="help">
+          <span class="nav-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          </span>
+          Help
+        </button>
+      </div>
+
+      <!-- Sidebar Footer -->
+      <div class="sidebar__footer">
+        <div class="status-indicator" id="status-indicator">
+          <span class="status-dot" id="status-dot"></span>
+          <span id="status-text">Checking…</span>
+        </div>
+      </div>
+
     </aside>
+    
+    <!-- Sidebar Overlay (mobile) moved inside stacking context -->
+    <div class="sidebar-overlay" id="sidebar-overlay" onclick="toggleSidebar()"></div>
 
-    <!-- ── Main Chat Area ────────────────────────────────── -->
-    <main class="chat-area">
+    <!-- ── Main Dashboard View ─────────────────────────────────── -->
+    <main class="main-content" id="main-content">
 
-      <!-- Header -->
-      <header class="chat-header">
-        <div class="chat-header__left">
-          <button class="hamburger-btn" id="sidebar-toggle" onclick="toggleSidebar()" aria-label="Toggle sidebar">
+      <!-- ── Top Header ──────────────────────────────────────── -->
+      <header class="top-header">
+        <div class="top-header__left">
+          <button class="hamburger-btn" id="hamburger-btn" onclick="toggleSidebar()" aria-label="Toggle sidebar">
             <span></span><span></span><span></span>
           </button>
-          <h1 class="chat-title" id="main-chat-title">Bible Assistant</h1>
-        </div>
-        <div class="chat-header__right">
-          <div class="header-badge" id="main-chat-badge">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-              stroke-width="2" width="14" height="14">
-              <circle cx="12" cy="12" r="10" />
-              <polyline points="12 6 12 12 16 14" />
-            </svg>
-            Offline Mode
+          <div class="header-greeting">
+            <span class="greeting-time" id="greeting-time">Good evening</span>
+            <h1 class="greeting-title" id="greeting-title">Welcome to RhemaLight AI</h1>
+            <div id="diagnostic-marker" style="display:none;">LOGOS_AI_V2_MARKER</div>
           </div>
+        </div>
+        <div class="top-header__right">
+          <button class="header-icon-btn" id="cloud-btn" title="Run Database Diagnostic" onclick="runSupabaseDiagnostic()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"/></svg>
+          </button>
+          <button class="header-icon-btn" title="Refresh" onclick="refreshDashboard()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+          </button>
+          <button class="header-icon-btn" title="Dark/Light Mode" onclick="toggleTheme()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+          </button>
+          <button class="header-icon-btn notification-btn" title="Notifications" onclick="openNotificationsModal()" id="notif-btn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+          </button>
+          <button class="user-avatar" id="header-user-avatar">?</button>
         </div>
       </header>
 
-      <!-- Messages Window -->
-      <div class="messages-window" id="messages-window">
+      <!-- ── Dashboard Scrollable Body ─────────────────────────── -->
+      <div class="dashboard-body" id="dashboard-body">
 
-        <!-- Welcome state (shown when no messages) -->
-        <div class="welcome-screen" id="welcome-screen">
-          <div class="welcome-icon">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-              stroke-width="1" stroke-linecap="round" stroke-linejoin="round" width="56" height="56">
-              <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" />
-              <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" />
-            </svg>
+        <!-- ─── View: Home ────────────────────────────────────── -->
+        <div class="view view--active" id="view-home">
+
+          <!-- Welcome Banner -->
+          <div class="welcome-banner" onclick="navigateTo('chat')">
+            <div class="welcome-banner__content">
+              <div class="welcome-banner__eyebrow">Your spiritual companion</div>
+              <h2 class="welcome-banner__title">Welcome back to RhemaLight AI, <em id="welcome-name">Friend!</em></h2>
+              <p class="welcome-banner__subtitle">Continue your spiritual journey with RhemaLight AI's intelligent insights and personalized guidance</p>
+              <button class="welcome-banner__cta" onclick="navigateTo('chat'); event.stopPropagation();">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><circle cx="12" cy="12" r="10"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                Ask a Question
+              </button>
+            </div>
           </div>
-          <h2 class="welcome-title">Welcome to <em>LogosAI</em></h2>
-          <p class="welcome-subtitle">
-            Ask any Bible question. I'll provide contextual explanations grounded in scripture,
-            with original Hebrew and Greek language context.
-          </p>
-          <div class="welcome-cards">
-            <div class="welcome-card" onclick="fillQuestion('What does John 3:16 mean in context?')">
-              <div class="wcard-icon">📖</div>
-              <div class="wcard-text">
-                <strong>Verse Meaning</strong>
-                <span>Deep contextual explanation of any Bible verse</span>
+
+          <!-- Featured Verse of the Day -->
+          <section class="dashboard-section featured-verse-section">
+            <div class="verse-card dashboard-card featured-verse-card">
+              <div class="verse-card__header">
+                <div class="verse-card__icon" style="background: var(--accent-light); color: var(--accent-deep); padding: 8px; border-radius: var(--r-sm);">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+                </div>
+                <div style="flex:1; text-align:center;">
+                  <div class="card-label" style="font-size: 0.85rem; letter-spacing: 0.1em;">VERSE OF THE DAY</div>
+                  <div class="card-sublabel" id="votd-theme" style="color: var(--accent); font-weight: 600;">Peace</div>
+                </div>
+                <button class="icon-btn like-btn" id="like-btn" onclick="toggleLike()" title="Like verse">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+                </button>
+              </div>
+              <div class="verse-card__body" style="text-align: center; padding: 12px 0;">
+                <blockquote class="verse-text" id="verse-text" style="font-size: 1.4rem; font-family: 'Playfair Display', serif; color: var(--text-primary); line-height: 1.5;">
+                  "Casting all your anxieties on him, because he cares for you."
+                </blockquote>
+                <cite class="verse-ref" id="verse-ref" style="font-size: 0.95rem; color: var(--text-muted); font-weight: 500; font-style: normal; margin-top: 12px; display: block;">— 1 Peter 5:7 (ESV)</cite>
+              </div>
+              <div class="verse-card__footer" style="justify-content: center; gap: 16px; margin-top: 16px;">
+                <button class="text-btn" style="color: var(--text-secondary); font-weight: 500;" onclick="loadNewVerse()">Next verse →</button>
+                <button class="text-btn" style="color: var(--accent); font-weight: 600;" onclick="navigateTo('chat'); fillAIQuestion('Explain 1 Peter 5:7 in context')">Ask AI Insights</button>
               </div>
             </div>
-            <div class="welcome-card" onclick="fillQuestion('What is the Greek logos in John 1:1?')">
-              <div class="wcard-icon">🔤</div>
-              <div class="wcard-text">
-                <strong>Original Languages</strong>
-                <span>Hebrew & Greek word meanings via Strong's</span>
+          </section>
+
+          <!-- Core Feature Cards Grid -->
+          <section class="dashboard-section">
+            <div class="feature-cards-grid">
+              
+              <button class="feature-card" onclick="navigateTo('chat')">
+                <div class="fc-icon" style="background: rgba(99,102,241,0.1); color: var(--accent);">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="28" height="28"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+                </div>
+                <div class="fc-content">
+                  <h3 class="fc-title">AI Assistant</h3>
+                  <p class="fc-desc">Ask questions, explore contexts, and deepen your understanding.</p>
+                </div>
+              </button>
+
+              <button class="feature-card" onclick="navigateTo('bible')">
+                <div class="fc-icon" style="background: rgba(16,185,129,0.1); color: #10b981;">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="28" height="28"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/></svg>
+                </div>
+                <div class="fc-content">
+                  <h3 class="fc-title">Read Bible</h3>
+                  <p class="fc-desc">Immerse yourself in scripture with a distraction-free reader.</p>
+                </div>
+              </button>
+
+              <button class="feature-card" onclick="navigateTo('sermon')">
+                <div class="fc-icon" style="background: rgba(244,63,94,0.1); color: #f43f5e;">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="28" height="28"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+                </div>
+                <div class="fc-content">
+                  <h3 class="fc-title">Sermon Builder</h3>
+                  <p class="fc-desc">Generate structured sermon outlines and discussion points.</p>
+                </div>
+              </button>
+
+              <button class="feature-card" onclick="navigateTo('group')">
+                <div class="fc-icon" style="background: rgba(245,158,11,0.1); color: #f59e0b;">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="28" height="28"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                </div>
+                <div class="fc-content">
+                  <h3 class="fc-title">Community</h3>
+                  <p class="fc-desc">Join study groups and chat with other members in real-time.</p>
+                </div>
+              </button>
+
+            </div>
+          </section>
+
+        </div><!-- /view-home -->
+
+        <!-- ─── View: AI Chat ─────────────────────────────────── -->
+        <div class="view" id="view-chat">
+          <div class="chat-header-bar">
+            <div class="chat-header-bar__left">
+              <button class="back-btn" onclick="navigateTo('home')">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+              </button>
+              <div>
+                <h2 class="view-title">Bible Assistant</h2>
+                <p class="view-subtitle">AI-Powered Biblical insights</p>
               </div>
             </div>
-            <div class="welcome-card" onclick="fillQuestion('Who was Melchizedek and why is he significant?')">
-              <div class="wcard-icon">🏛️</div>
-              <div class="wcard-text">
-                <strong>Biblical Figures</strong>
-                <span>Context, significance, and narrative roles</span>
+            <div class="chat-header-bar__right">
+              <div class="status-chip" id="ai-status-chip">
+                <span class="status-chip-dot" id="ai-chip-dot"></span>
+                <span id="ai-chip-text">Loading…</span>
+              </div>
+              <button class="icon-btn" onclick="newChat()" title="New conversation">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              </button>
+            </div>
+          </div>
+
+          <div class="chat-messages" id="chat-messages">
+            <!-- Welcome state -->
+            <div class="chat-welcome" id="chat-welcome">
+              <div class="chat-welcome__icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" width="48" height="48"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+              </div>
+              <h3>Welcome to <em>RhemaLight AI</em></h3>
+              <p>Ask any Bible question. I'll provide contextual explanations grounded in scripture.</p>
+              <div class="chat-prompt-chips">
+                <button class="prompt-chip" onclick="fillQuestion('What does John 3:16 mean in context?')">📖 John 3:16 meaning</button>
+                <button class="prompt-chip" onclick="fillQuestion('Explain the Hebrew word for love in Psalm 23')">🔤 Hebrew word for love</button>
+                <button class="prompt-chip" onclick="fillQuestion('Who was Melchizedek and why is he significant?')">🏛️ Who was Melchizedek?</button>
+                <button class="prompt-chip" onclick="fillQuestion('Explain the Sermon on the Mount')">⛪ Sermon on the Mount</button>
+              </div>
+            </div>
+            <!-- Messages will be injected here -->
+            <div id="messages-list"></div>
+          </div>
+
+          <div class="chat-input-bar" id="main-input-area">
+            <div class="chat-input-wrapper">
+              <textarea
+                id="question-input"
+                class="chat-textarea"
+                placeholder="Ask a Bible question…"
+                rows="1"
+                maxlength="2000"
+                onkeydown="handleKeyDown(event)"
+                oninput="autoResize(this)"
+                aria-label="Bible question input"
+              ></textarea>
+              <button class="send-btn" id="send-btn" onclick="sendMessage()" aria-label="Send">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" width="18" height="18"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+              </button>
+            </div>
+            <div class="input-meta">Enter to send · Shift+Enter for new line</div>
+          </div>
+        </div><!-- /view-chat -->
+
+        <!-- ─── View: Community Group Chat ─────────────────── -->
+        <div class="view" id="view-group">
+          <div class="chat-header-bar">
+            <div class="chat-header-bar__left">
+              <button class="back-btn" onclick="exitGroup()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+              </button>
+              <div>
+                <h2 class="view-title" id="group-chat-title">Group Chat</h2>
+                <p class="view-subtitle" id="group-chat-subtitle">Community Group</p>
+              </div>
+            </div>
+            <div class="chat-header-bar__right">
+              <div class="room-code-badge" onclick="copyRoomCode()" title="Click to copy">
+                Code: <strong id="active-room-code">XXXXXX</strong>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+              </div>
+            </div>
+          </div>
+
+          <div class="chat-messages" id="group-messages-window">
+            <div class="group-welcome" id="group-welcome-screen">
+              <div class="group-welcome__icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="44" height="44"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+              </div>
+              <h3>Room Created!</h3>
+              <p>Share this code with your community to begin the discussion.</p>
+              <div class="big-room-code" id="big-room-code" onclick="copyRoomCode()">XXXXXX</div>
+              <span class="copy-hint">Click to copy</span>
+            </div>
+            <div id="group-messages-list"></div>
+          </div>
+
+          <div class="chat-input-bar">
+            <div class="chat-input-wrapper">
+              <textarea id="group-input" class="chat-textarea" placeholder="Type a message…" rows="1" maxlength="1000"
+                onkeydown="handleGroupKeyDown(event)" oninput="autoResize(this)"></textarea>
+              <button class="send-btn" id="group-send-btn" onclick="sendGroupMessage()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" width="18" height="18"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+              </button>
+            </div>
+          </div>
+        </div><!-- /view-group -->
+
+        <!-- ─── View: Read Bible ──────────────────────────────── -->
+        <div class="view" id="view-bible">
+          <div class="view-header-simple">
+            <h2 class="view-title">Read Scripture</h2>
+            <div class="header-controls">
+              <select class="form-select" id="bible-version" onchange="loadBibleContent()">
+                <option value="en_kjv">English (KJV)</option>
+                <option value="en_esv">English (ESV/BBE)</option>
+                <option value="ta_bsi">Tamil (BSI)</option>
+                <option value="dual">Dual Language (EN/TA)</option>
+              </select>
+            </div>
+          </div>
+          <div class="bible-toolbar">
+            <select class="form-select" id="bible-book" onchange="loadBibleChapters()"></select>
+            <select class="form-select" id="bible-chapter" onchange="loadBibleContent()"></select>
+          </div>
+          <div id="plan-banner-container"></div>
+          <div class="bible-content-area dashboard-card" id="bible-display"></div>
+        </div>
+
+        <!-- ─── View: Reading Plans ───────────────────────────── -->
+        <div class="view" id="view-plans">
+          <div class="view-header-simple">
+            <h2 class="view-title">Devotional Plans</h2>
+            <p class="text-secondary mt-1">Structured reading to guide your daily time with God.</p>
+          </div>
+          
+          <div class="grid-2col" id="plans-container">
+            <!-- Full Bible in One Year -->
+            <div class="dashboard-card devotional-plan-card" data-plan-id="full-bible-365">
+              <h3 class="font-bold text-lg mb-1">Full Bible in One Year</h3>
+              <p class="text-secondary small mb-4">Read through the entire Old and New Testament in 365 days.</p>
+              
+              <div class="mt-2 mb-3 min-h-[40px]">
+                <p class="text-xs font-bold text-primary mb-1" id="current-day-full-bible-365"></p>
+                <p class="text-sm text-secondary" id="next-task-full-bible-365"></p>
+              </div>
+
+              <div class="progress-container">
+                <div class="progress-fill" id="progress-full-bible-365" style="width: 0%;"></div>
+              </div>
+              <div class="plan-status-row mt-2">
+                <span class="text-xs text-muted" id="status-text-full-bible-365">0% Completed</span>
+                <button class="action-btn action-btn--sm" id="btn-full-bible-365" onclick="startPlan('full-bible-365')">Start Plan</button>
+              </div>
+            </div>
+
+            <!-- Gospels in 4 Months -->
+            <div class="dashboard-card devotional-plan-card" data-plan-id="gospels-120">
+              <h3 class="font-bold text-lg mb-1">Gospels in 4 Months</h3>
+              <p class="text-secondary small mb-4">A 120-day journey through Matthew, Mark, Luke, and John.</p>
+              
+              <div class="mt-2 mb-3 min-h-[40px]">
+                <p class="text-xs font-bold text-primary mb-1" id="current-day-gospels-120"></p>
+                <p class="text-sm text-secondary" id="next-task-gospels-120"></p>
+              </div>
+              
+              <div class="progress-container">
+                <div class="progress-fill" id="progress-gospels-120" style="width: 0%;"></div>
+              </div>
+              <div class="plan-status-row mt-2">
+                <span class="text-xs text-muted" id="status-text-gospels-120">0% Completed</span>
+                <button class="action-btn action-btn--sm" id="btn-gospels-120" onclick="startPlan('gospels-120')">Start Plan</button>
+              </div>
+            </div>
+
+            <!-- New Testament in a Year -->
+            <div class="dashboard-card devotional-plan-card" data-plan-id="nt-year">
+              <h3 class="font-bold text-lg mb-1">New Testament in a Year</h3>
+              <p class="text-secondary small mb-4">Read through the entire New Testament in 365 days, one chapter a day.</p>
+              
+              <div class="mt-2 mb-3 min-h-[40px]">
+                <p class="text-xs font-bold text-primary mb-1" id="current-day-nt-year"></p>
+                <p class="text-sm text-secondary" id="next-task-nt-year"></p>
+              </div>
+              
+              <div class="progress-container">
+                <div class="progress-fill" id="progress-nt-year" style="width: 0%;"></div>
+              </div>
+              <div class="plan-status-row mt-2">
+                <span class="text-xs text-muted" id="status-text-nt-year">0% Completed</span>
+                <button class="action-btn action-btn--sm" id="btn-nt-year" onclick="startPlan('nt-year')">Start Plan</button>
               </div>
             </div>
           </div>
         </div>
 
-        <!-- Chat messages are injected here -->
-        <div class="messages-list" id="messages-list"></div>
-
-      </div>
-
-      <!-- Input Area -->
-      <div class="input-area" id="main-input-area">
-        <div class="input-wrapper">
-          <textarea id="question-input" class="question-input" placeholder="Ask a Bible question..." rows="1"
-            maxlength="2000" onkeydown="handleKeyDown(event)" oninput="autoResize(this)"
-            aria-label="Bible question input"></textarea>
-          <button class="send-btn" id="send-btn" onclick="sendMessage()" aria-label="Send question">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-              stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" width="18" height="18">
-              <line x1="22" y1="2" x2="11" y2="13" />
-              <polygon points="22 2 15 22 11 13 2 9 22 2" />
-            </svg>
-          </button>
+        <!-- ─── View: Accountability ──────────────────────────── -->
+        <div class="view" id="view-accountability">
+          <div class="view-header-simple">
+            <h2 class="view-title">Growth & Accountability</h2>
+          </div>
+          <div class="grid-2col">
+            <div class="dashboard-card streak-card">
+              <div class="streak-icon">🔥</div>
+              <div class="streak-text" id="streak-display">0 Day Streak!</div>
+              <p id="points-display">0 Points Earned</p>
+            </div>
+            <div class="dashboard-card">
+              <h3 class="text-primary font-semibold">Prayer Log</h3>
+              <textarea id="prayer-input" class="form-input mt-2" rows="3" placeholder="Log your prayers here (will sync to Supabase)..."></textarea>
+              <button class="action-btn mt-2" onclick="savePrayer()">Save Prayer</button>
+            </div>
+          </div>
         </div>
-        <span class="input-hint">Enter to send · Shift+Enter for new line</span>
-      </div>
+
+        <!-- ─── View: Library ──────────────────────────────────────── -->
+        <div class="view" id="view-library">
+          <div class="view-header-simple">
+            <h2 class="view-title">Knowledge Hub</h2>
+          </div>
+          <div class="grid-3col">
+            <div class="dashboard-card clickable" onclick="navigateTo('chat'); fillQuestion('Teach me about Christian Doctrine')">
+              <h3>📚 Doctrine</h3>
+              <p>Core beliefs and theology.</p>
+            </div>
+            <div class="dashboard-card clickable" onclick="navigateTo('chat'); fillQuestion('Tell me about the early Church History')">
+              <h3>🏛️ Church History</h3>
+              <p>From Acts to modern era.</p>
+            </div>
+            <div class="dashboard-card clickable" onclick="navigateTo('chat'); fillQuestion('Give me a devotional reading')">
+              <h3>🕊️ Devotionals</h3>
+              <p>Daily spiritual reflections.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- ─── View: Study Guides ───────────────────────────── -->
+        <div class="view" id="view-study">
+          <div class="view-header-simple">
+            <h2 class="view-title">Study Architect</h2>
+            <p>Generate deep-dive Bible studies on any topic or character.</p>
+          </div>
+
+          <div class="grid-3col">
+            <!-- Topic Study -->
+            <div class="dashboard-card">
+              <div class="flex-between mb-4">
+                <h3 class="m-0">🔥 Topic Study</h3>
+                <span class="badge badge--primary">Themes</span>
+              </div>
+              <p class="text-secondary small mb-4">Explore themes like Grace, Faith, or Hope.</p>
+              <input type="text" id="study-topic-input" class="form-input" placeholder="Enter topic (e.g. Forgiveness)">
+              <button class="action-btn mt-4 w-full" onclick="generateStudyGuide('topic')">Generate Outline</button>
+            </div>
+
+            <!-- Character Study -->
+            <div class="dashboard-card">
+              <div class="flex-between mb-4">
+                <h3 class="m-0">👤 Character</h3>
+                <span class="badge badge--success">Biography</span>
+              </div>
+              <p class="text-secondary small mb-4">Analyze figures like David, Paul, or Mary.</p>
+              <input type="text" id="study-char-input" class="form-input" placeholder="Enter name (e.g. Apostle Paul)">
+              <button class="action-btn mt-4 w-full" onclick="generateStudyGuide('character')">Analyze Profile</button>
+            </div>
+
+            <!-- Book Study -->
+            <div class="dashboard-card">
+              <div class="flex-between mb-4">
+                <h3 class="m-0">📖 Book Study</h3>
+                <span class="badge badge--warning">Overview</span>
+              </div>
+              <p class="text-secondary small mb-4">Key themes and blueprints of any Book.</p>
+              <input type="text" id="study-book-input" class="form-input" placeholder="Enter book (e.g. Ephesians)">
+              <button class="action-btn mt-4 w-full" onclick="generateStudyGuide('book')">Get Blueprint</button>
+            </div>
+          </div>
+
+          <div class="mt-8 p-6 bg-glass rounded-xl border border-white/10">
+            <h3 class="mb-2">How it works</h3>
+            <p class="text-secondary">AI Study Architect uses cross-referenced scriptures to build structured outlines including key verses, historical context, and practical applications.</p>
+          </div>
+        </div>
+
+        <!-- ─── View: Sermon Builder ──────────────────────────── -->
+        <div class="view" id="view-sermon">
+          <div class="view-header-simple">
+            <h2 class="view-title">Sermon Architect</h2>
+            <p>Generate outlines, key points, and applications.</p>
+          </div>
+          <div class="dashboard-card">
+            <label class="form-label">Sermon Topic or Verse</label>
+            <input type="text" class="form-input" id="sermon-input" placeholder="e.g. Hope in hard times, or Romans 5:3-5">
+            <label class="form-label mt-4">Language / Context</label>
+            <input type="text" class="form-input" id="sermon-context" placeholder="e.g. English, or Tamil, Youth service">
+            <button class="action-btn mt-4" id="btn-generate-sermon" onclick="generateSermon()">Generate Sermon Outline</button>
+          </div>
+          <div class="dashboard-card mt-4" id="sermon-output" style="display:none;">
+            <div id="sermon-output-content" class="generated-content-area"></div>
+          </div>
+        </div>
+
+        <!-- ─── View: Service Orders (CSI) ────────────────────── -->
+        <div class="view" id="view-service">
+          <div class="view-header-simple">
+            <h2 class="view-title">Order of Service</h2>
+            <div class="header-controls">
+              <button class="icon-btn text-blue" onclick="window.print()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg> Print
+              </button>
+            </div>
+          </div>
+          <div class="dashboard-card mb-4 no-print">
+            <div class="grid-2col" style="align-items: center;">
+              <div>
+                <label class="form-label">Service Category</label>
+                <select class="form-select" id="liturgy-service-type" onchange="renderLiturgy()">
+                  <option value="English First Service">English First Service</option>
+                  <option value="Tamil Order of Service">Tamil Order of Service (காலை ஆராதனை)</option>
+                  <option value="Wedding Order of Service">Wedding Order of Service (திருமண ஆராதனை)</option>
+                </select>
+              </div>
+              <div style="display: flex; gap: 8px; justify-content: flex-end; align-items: flex-end; height: 100%;">
+                <button class="action-btn btn-outline text-sm" onclick="toggleAllLiturgy(true)">Expand All</button>
+                <button class="action-btn btn-outline text-sm" onclick="toggleAllLiturgy(false)">Collapse All</button>
+              </div>
+            </div>
+            <!-- Liturgy search removed -->
+          </div>
+          
+          <div id="liturgy-accordion-container" class="liturgy-container">
+            <!-- Dynamically populated by app.js -->
+          </div>
+        </div>
+
+        <!-- ─── View: Worship Hub ───────────────────────────── -->
+        <div class="view" id="view-songs">
+          <div class="view-header-simple">
+            <h2 class="view-title">Worship Hub & Playlists</h2>
+            <p class="text-secondary mt-1">Manage your worship songs, playlists, and embed YouTube tracks.</p>
+          </div>
+          
+          <div class="grid" style="display: grid; grid-template-columns: 250px 1fr; gap: 20px;">
+            <!-- Sidebar: Playlists -->
+            <div class="dashboard-card py-2">
+              <h3 class="mt-2 mb-3 border-b border-[var(--border)] pb-2 flex justify-between items-center text-primary">
+                My Playlists
+                <button class="icon-btn text-accent hover:bg-[var(--bg-card-hover)] p-1 rounded transition-colors" onclick="promptCreatePlaylist()" title="New Playlist">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                </button>
+              </h3>
+              <ul class="simple-list custom-scrollbar overflow-y-auto" style="max-height: 400px;" id="playlists-sidebar-list">
+                <li class="p-2 text-secondary text-sm">Loading playlists...</li>
+              </ul>
+            </div>
+            
+            <!-- Main Content Area -->
+            <div>
+                <!-- Add Song Form -->
+                <div class="dashboard-card mb-4 flex flex-wrap gap-3 items-end bg-[var(--bg-card-hover)] border border-[var(--border)]" id="add-song-form">
+                    <div style="flex:1; min-width: 200px;">
+                        <label class="form-label">Song Title</label>
+                        <input type="text" id="new-song-title" class="form-input" placeholder="e.g. Amazing Grace">
+                    </div>
+                    <div style="flex:1; min-width: 200px;">
+                        <label class="form-label">YouTube URL</label>
+                        <input type="text" id="new-song-url" class="form-input" placeholder="https://youtube.com/watch?v=...">
+                    </div>
+                    <div class="w-40">
+                        <label class="form-label">Playlist</label>
+                        <select id="new-song-playlist" class="form-select">
+                           <option value="USER">USER (Default)</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="form-label">Category</label>
+                        <select id="new-song-category" class="form-select w-32">
+                           <option value="worship">Worship</option>
+                           <option value="praise">Praise</option>
+                           <option value="tamil">Tamil</option>
+                           <option value="custom">Custom</option>
+                        </select>
+                    </div>
+                    <button class="action-btn" id="add-song-btn" onclick="addYouTubeSong()">
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-1 inline"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg> Add Song
+                    </button>
+                </div> <!-- END Add Song Form -->
+                
+                <!-- Placeholder shown before any song is selected -->
+                <div id="player-placeholder" class="dashboard-card mb-4 p-0 overflow-hidden">
+                  <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:36px 24px;gap:14px;background:linear-gradient(135deg,var(--bg-card) 60%,var(--bg-accent-soft));border-radius:inherit;">
+                    <div style="width:60px;height:60px;border-radius:50%;background:var(--bg-accent-soft);display:flex;align-items:center;justify-content:center;">
+                      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="18" r="3"/><circle cx="15" cy="15" r="3"/><path d="M12 18V5l5-2v3"/></svg>
+                    </div>
+                    <div style="text-align:center;">
+                      <p style="margin:0;font-weight:700;font-size:1rem;color:var(--text-primary);">No Song Playing</p>
+                      <p style="margin:4px 0 0;font-size:0.82rem;color:var(--text-secondary);">Click &#9654; on any song card to start playing</p>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Player — hidden until first song is clicked, no iframe on load -->
+                <div id="youtube-player-container" class="dashboard-card mb-4 p-0 overflow-hidden relative shadow-lg" style="display:none;">
+                    <button onclick="closeYouTubePlayer()" class="absolute top-2 right-2 bg-black/50 text-white rounded-full p-2 hover:bg-black/80 z-10 focus:outline-none" title="Close Player">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                    </button>
+                    <div class="aspect-video w-full bg-black">
+                        <!-- JS injects the YT player iframe here only on first play -->
+                        <div id="ytplayer-wrap" style="width:100%;height:100%;min-height:200px;"></div>
+                    </div>
+                    <div class="p-3 bg-[var(--bg-card)] border-t border-[var(--border)]">
+                       <h3 id="ytplayer-title" class="m-0 text-base font-bold text-primary truncate mb-3">Playing</h3>
+                       <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+                         <button id="player-prev-btn" onclick="playAdjacentSong(-1)" title="Previous Song"
+                           style="background:var(--bg-card-hover);border:1px solid var(--border);border-radius:8px;padding:7px 12px;cursor:pointer;color:var(--text-secondary);display:flex;align-items:center;gap:6px;font-size:0.8rem;">
+                           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="19 20 9 12 19 4 19 20"/><line x1="5" y1="19" x2="5" y2="5"/></svg>
+                           Prev
+                         </button>
+                         <button id="player-next-btn" onclick="playAdjacentSong(1)" title="Next Song"
+                           style="background:var(--bg-card-hover);border:1px solid var(--border);border-radius:8px;padding:7px 12px;cursor:pointer;color:var(--text-secondary);display:flex;align-items:center;gap:6px;font-size:0.8rem;">
+                           Next
+                           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 4 15 12 5 20 5 4"/><line x1="19" y1="5" x2="19" y2="19"/></svg>
+                         </button>
+                         <button id="autoplay-toggle-btn" onclick="toggleAutoplay()" title="Toggle Autoplay"
+                           style="background:var(--bg-card-hover);border:1px solid var(--border);border-radius:8px;padding:7px 14px;cursor:pointer;color:var(--text-secondary);display:flex;align-items:center;gap:7px;font-size:0.8rem;font-weight:600;transition:all 0.2s;">
+                           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                           Autoplay: OFF
+                         </button>
+                         <a id="ytplayer-watch-link" href="#" target="_blank" rel="noopener"
+                            style="margin-left:auto;display:inline-flex;align-items:center;gap:6px;font-size:0.78rem;color:var(--accent);text-decoration:none;white-space:nowrap;border:1px solid var(--accent);border-radius:999px;padding:4px 12px;transition:background 0.2s;"
+                            onmouseover="this.style.background='var(--accent-light)'" onmouseout="this.style.background='transparent'">
+                            <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+                            YouTube
+                         </a>
+                       </div>
+                    </div>
+                </div>
+
+                
+                <!-- Songs Grid Wrapper -->
+                <div>
+                   <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-4">
+                       <h3 class="m-0 text-lg font-bold text-primary flex items-center gap-2" id="current-song-view-title">
+                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polygon points="10 8 16 12 10 16 10 8"></polygon></svg>
+                         All Songs
+                       </h3>
+                       <div class="flex items-center gap-2 w-full sm:w-auto">
+                           <!-- Inline Search -->
+                           <div class="relative w-full sm:w-64">
+                               <input type="text" id="song-search-input" placeholder="Search for a song..." 
+                                 oninput="handleSearch(this.value)"
+                                 style="width:100%;background:var(--bg-card-hover);border:1px solid var(--border);border-radius:20px;padding:6px 14px 6px 36px;font-size:0.85rem;color:var(--text-primary);outline:none;transition:border-color 0.2s;"
+                                 onfocus="this.style.borderColor='var(--accent)'" onblur="this.style.borderColor='var(--border)'">
+                               <svg class="absolute left-3 top-1/2 -translate-y-1/2 text-secondary" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                           </div>
+                           <div id="playlist-actions" class="hidden flex gap-2">
+                               <button class="action-btn btn-outline text-xs px-2 py-1" onclick="promptRenamePlaylist()">Rename</button>
+                               <button class="action-btn btn-outline text-danger text-xs px-2 py-1" onclick="confirmDeletePlaylist()">Delete</button>
+                           </div>
+                       </div>
+                   </div>
+                   <!-- Using grid-3col for thumbnails -->
+                   <div class="grid-3col gap-4" id="songs-grid-container">
+                       <div class="text-secondary text-sm my-4 col-span-3 text-center">Loading songs...</div>
+                   </div>
+                </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ─── View: History ─────────────────────────── -->
+        <div class="view" id="view-history">
+          <div class="view-header-simple">
+            <h2 class="view-title">My History</h2>
+            <p class="text-secondary mt-1">Saved prayers, generated sermons, and liked verses.</p>
+          </div>
+          
+          <div class="flex gap-2 mb-4" style="margin-top:20px; overflow-x:auto;">
+            <button class="btn btn-secondary" onclick="fetchHistory('all')">All</button>
+            <button class="btn btn-secondary" onclick="fetchHistory('prayers')">Prayers</button>
+            <button class="btn btn-secondary" onclick="fetchHistory('sermons')">Sermons</button>
+            <button class="btn btn-secondary" onclick="fetchHistory('liked_verses')">Liked Verses</button>
+          </div>
+          
+          <div id="history-container" class="dashboard-grid">
+            <div class="dashboard-card text-secondary">Loading history...</div>
+          </div>
+        </div>
+
+        <!-- ─── View: Settings & Help ─────────────────────────── -->
+        <div class="view" id="view-settings">
+          <div class="view-header-simple">
+            <h2 class="view-title">Application Settings</h2>
+          </div>
+          <div class="dashboard-card max-w-lg">
+            <div class="settings-row">
+              <div>
+                <h4>App Language</h4>
+                <p class="text-xs text-muted">Switch interface between English and Tamil</p>
+              </div>
+              <select class="form-select w-auto" id="setting-lang">
+                <option value="en">English (Default)</option>
+                <option value="ta">Tamil (தமிழ்)</option>
+              </select>
+            </div>
+            <div class="settings-row mt-4">
+              <div>
+                <h4>Theme Mode</h4>
+                <p class="text-xs text-muted">Toggle visual aesthetics</p>
+              </div>
+              <select class="form-select w-auto" id="setting-theme">
+                <option value="dark">Dark Glassmorphism</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- Help View -->
+        <div class="view" id="view-help">
+          <div class="view-header-simple">
+            <h2 class="view-title">Help Center & FAQs</h2>
+          </div>
+          <div class="dashboard-card max-w-lg">
+            <details class="faq-item" open>
+              <summary>What is RhemaLight AI?</summary>
+              <p>A personal AI spiritual assistant for deep contextual Bible study, Tamil/English support, and CSI service planning.</p>
+            </details>
+            <details class="faq-item">
+              <summary>How does the AI work?</summary>
+              <p>Responses are generated locally via simulated state, but designed to connect to unrestricted free models (like Mistral-7B) for actual deployments.</p>
+            </details>
+          </div>
+        </div>
+
+      </div><!-- /dashboard-body -->
 
     </main>
 
-    <!-- ── Group Chat Area (Hidden by default) ────────────────── -->
-    <main class="chat-area group-area" id="group-area" style="display: none;">
-      <header class="chat-header">
-        <div class="chat-header__left">
-          <button class="hamburger-btn" onclick="exitGroup()" aria-label="Exit Group">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-              stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="20" height="20">
-              <line x1="19" y1="12" x2="5" y2="12"></line>
-              <polyline points="12 19 5 12 12 5"></polyline>
-            </svg>
-          </button>
-          <div style="display: flex; flex-direction: column;">
-            <h1 class="chat-title" id="group-chat-title">Group Chat</h1>
-            <span style="font-size: 0.75rem; opacity: 0.7; margin-top:-4px;" id="group-chat-subtitle">Community
-              Group</span>
-          </div>
-        </div>
-        <div class="chat-header__right">
-          <div class="room-code-badge" onclick="copyRoomCode()">
-            Code: <strong id="active-room-code">XXXXXX</strong>
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-              stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="14" height="14"
-              style="margin-left:4px;">
-              <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-              <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-            </svg>
-          </div>
-        </div>
-      </header>
+  </div><!-- /app-shell -->
 
-      <div class="messages-window group-messages-window" id="group-messages-window">
-        <div class="group-welcome-screen" id="group-welcome-screen">
-          <div class="welcome-icon" style="margin-bottom: 1.5rem;">
-            <div class="icon-circle">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" width="48" height="48">
-                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
-                <circle cx="9" cy="7" r="4"></circle>
-                <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
-              </svg>
-            </div>
-          </div>
-          <h2 class="welcome-title">Room Created!</h2>
-          <p class="welcome-subtitle">Share this room code with your community to begin the discussion.</p>
-          <div class="big-room-code-container">
-            <div class="big-room-code" id="big-room-code" onclick="copyRoomCode()">XXXXXX</div>
-            <span class="copy-hint">Click to Copy</span>
-          </div>
-        </div>
-        <div class="messages-list" id="group-messages-list"></div>
+  <!-- Auth Screen (Visible until Auth) -->
+  <div class="modal-overlay" id="auth-modal" style="display: flex; z-index: 9999; background: var(--bg-main);">
+    <div class="auth-modal-content">
+      <button class="icon-btn" id="auth-close-btn" style="position:absolute; top:12px; right:12px; display: none;" onclick="closeAuthModal()">
+        <svg viewBox="0 0 24 24" fill="none" class="text-secondary" stroke="currentColor" stroke-width="2" width="20" height="20"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+      <div class="mb-6">
+        <h2 class="font-serif text-primary text-xl" id="auth-title">Welcome to RhemaLight AI</h2>
+        <p class="text-sm text-secondary" id="auth-subtitle">Sign in to sync your spiritual journey.</p>
       </div>
-
-      <div class="input-area">
-        <div class="input-wrapper">
-          <textarea id="group-input" class="question-input" placeholder="Type a message..." rows="1" maxlength="1000"
-            onkeydown="handleGroupKeyDown(event)" oninput="autoResize(this)"></textarea>
-          <button class="send-btn" id="group-send-btn" onclick="sendGroupMessage()">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-              stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="18" height="18">
-              <line x1="22" y1="2" x2="11" y2="13" />
-              <polygon points="22 2 15 22 11 13 2 9 22 2" />
-            </svg>
-          </button>
-        </div>
+      <div style="display: flex; flex-direction: column; gap: 12px; margin-bottom: 20px;">
+        <input type="email" id="auth-email" class="form-input" placeholder="Email address" required>
+        <input type="password" id="auth-password" class="form-input" placeholder="Password" required>
       </div>
-    </main>
+      <button class="action-btn w-full" id="auth-btn-primary" style="margin-bottom:12px;" onclick="handleAuthSubmit()">Log In</button>
+      
+      <div class="auth-divider">or</div>
 
+      <!-- Premium Google Sign In Button -->
+      <button class="google-btn" onclick="handleGoogleSignIn()">
+        <span class="google-icon-wrapper">
+          <svg viewBox="0 0 24 24" width="20" height="20" xmlns="http://www.w3.org/2000/svg">
+            <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+            <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+            <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
+            <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+          </svg>
+        </span>
+        <span>Continue with Google</span>
+      </button>
+
+      <div class="mt-4">
+        <button class="text-btn text-sm" id="auth-toggle-mode" onclick="toggleAuthMode()">Don't have an account? Sign up</button>
+      </div>
+    </div>
   </div>
 
+  <!-- Toast Notification -->
+  <div class="toast" id="toast"></div>
+
+  <!-- Profile Settings Modal -->
+  <div class="modal-overlay" id="profile-modal" style="display: none;">
+    <div class="modal-content dashboard-card text-center" style="max-width: 400px; width: 90%;">
+      <button class="icon-btn" style="position:absolute; top:12px; right:12px;" onclick="closeProfileModal()">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+      </button>
+      <div class="logo-icon mx-auto mb-3" style="width:48px; height:48px;">
+        <svg viewBox="0 0 24 24" width="24" height="24" fill="none" class="stroke-white" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      </div>
+      <h3 class="text-xl font-bold mb-2">Account Settings</h3>
+      <p class="text-sm text-secondary mb-4" id="profile-email-display"></p>
+      
+      <div class="field-group text-left mb-3">
+        <label class="field-label">Display Name</label>
+        <input type="text" id="profile-name" class="field-input mt-1" placeholder="Enter name">
+      </div>
+      
+      <div class="field-group text-left mb-3">
+        <label class="field-label">Preferred Theme</label>
+        <select id="profile-theme" class="field-input mt-1 pt-2 pb-2">
+          <option value="light">Light (Default)</option>
+          <option value="dark">Dark Theme</option>
+        </select>
+      </div>
+      
+      <div class="field-group text-left mb-4">
+        <label class="field-label">Preferred Language</label>
+        <select id="profile-language" class="field-input mt-1 pt-2 pb-2">
+          <option value="en">English</option>
+          <option value="ta">Tamil</option>
+        </select>
+      </div>
+      
+      <button class="community-btn community-btn--primary w-full mb-3" id="profile-save-btn" onclick="saveProfile()">Save Changes</button>
+      <button class="community-btn community-btn--secondary w-full mb-3" id="profile-pwd-reset" onclick="requestPasswordReset()">Send Password Reset Email</button>
+      
+      <div class="mt-4 pt-3" style="border-top: 1px solid var(--border);">
+        <button class="text-sm" style="color:#f87171; font-weight:600;" onclick="handleLogout()">Log Out</button>
+      </div>
+    </div>
   </div>
 
-  <script src="/static/app.js"></script>
+  <!-- Notifications Modal -->
+  <div class="modal-overlay" id="notif-modal" style="display: none;">
+    <div class="modal-content dashboard-card text-left" style="max-width: 450px; width: 90%;">
+      <button class="icon-btn" style="position:absolute; top:12px; right:12px;" onclick="closeNotificationsModal()">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+      </button>
+      <h3 class="text-xl font-bold mb-4 border-b pb-2">Notifications</h3>
+      
+      <div id="notifications-list" class="flex flex-col gap-2 max-h-64 overflow-y-auto pr-2">
+        <p class="text-secondary text-sm">Loading notifications...</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="/static/supabase-client.js?v=3.0"></script>
+  <!-- YouTube IFrame API (needed for Autoplay end-of-song detection) -->
+  <script src="https://www.youtube.com/iframe_api"></script>
+  <script src="/static/bible-engine.js?v=2.0"></script>
+  <script src="/static/app.js?v=3.53"></script>
   <script src="/static/group.js"></script>
+  <!-- ─── Modal: Plan Reading ────────────────────────────── -->
+  <div id="reading-modal" class="modal-overlay" style="display: none;">
+    <div class="modal-container dashboard-card" style="max-width: 500px; margin: 0 auto; position: relative; top: 10%;">
+      <div class="modal-header flex justify-between items-center p-4 border-b">
+        <h3 id="reading-modal-title" class="text-xl font-bold font-serif">Daily Reading</h3>
+        <button class="icon-btn text-2xl" onclick="closeReadingModal()">&times;</button>
+      </div>
+      <div class="modal-body py-8 text-center p-4">
+        <span id="reading-modal-day" class="text-[10px] font-bold uppercase tracking-widest text-accent bg-accent-light px-3 py-1 rounded-full">Day 1</span>
+        <h2 id="reading-modal-content" class="text-3xl font-serif italic mt-6 text-primary leading-tight">Genesis 1-3</h2>
+        <p class="text-secondary mt-6 text-sm max-w-xs mx-auto">Take a moment to reflect on today's scripture and its application to your life.</p>
+      </div>
+      <div class="modal-footer flex gap-3 p-4 border-t">
+        <button class="action-btn flex-1 py-3" id="complete-day-btn" onclick="markDayComplete()">Mark as Completed</button>
+        <button class="action-btn action-btn--secondary flex-1 py-3" onclick="closeReadingModal()">Close</button>
+      </div>
+    </div>
+  </div>
 </body>
 
 </html>

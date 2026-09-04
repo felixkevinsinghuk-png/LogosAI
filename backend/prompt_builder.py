@@ -44,15 +44,16 @@ STRICT RULES:
 - Ensure responses are exhaustive and provide maximum theological depth without mentioning internal constraints.
 - If no articles are found, you must state: "No trusted contextual sources were found for this question."
 """
+from typing import List, Optional, Union, Dict
 
 
 def build_prompt(
     user_question: str,
-    context_passages: list[dict],
-    context_articles: list[dict] = None,
+    context_passages: List[Dict],
+    context_articles: Optional[List[Dict]] = None,
     language_notes: str = "",
-    history: list[dict] = None,
-    intent: str | dict = None
+    history: Optional[List[Dict]] = None,
+    intent: Optional[Union[str, Dict]] = None
 ) -> str:
     """
     Construct a full Mistral-format prompt string with dynamic transformation support.
@@ -171,7 +172,7 @@ Ensure the exegesis is academic, linguistically informed, and provides maximum t
     return f"<s>[INST] {SYSTEM_INSTRUCTION}\n\n{assignment} [/INST]"
 
 
-def build_simple_prompt(user_question: str, history: list[dict] = None, intent: str | dict = None) -> str:
+def build_simple_prompt(user_question: str, history: Optional[List[Dict]] = None, intent: Optional[Union[str, Dict]] = None) -> str:
     """
     Build a minimal prompt with intent and history.
     """

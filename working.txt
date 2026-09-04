@@ -1,0 +1,95 @@
+# RhemaLight AI - Working Features and Usage Guide
+
+This file documents all the functional features currently built into the 
+RhemaLight AI frontend prototype, and how to use them.
+
+--------------------------------------------------------------------------------
+1. HOME DASHBOARD
+--------------------------------------------------------------------------------
+Feature: The main landing page greeting the user.
+Use:
+- View the daily Verse of the Day (you can like it to save it locally, or click next to cycle through predetermined verses).
+- Use the quick action cards to instantly navigate to different modules (Library, Scripture, Devotions).
+- Use the inline AI input box at the top to ask spiritual questions right from the home screen.
+
+--------------------------------------------------------------------------------
+2. AI BIBLE ASSISTANT (CHAT)
+--------------------------------------------------------------------------------
+Feature: A simulated conversational interface powered by local state.
+Use:
+- From the Home Dashboard or Sidebar, you can ask questions like "What does John 3:16 mean?" or "Explain the Sermon on the Mount". 
+- The system simulates a backend AI by providing a loading (typing) indicator and generating beautifully formatted responses (complete with related passages).
+- Useful for deep, contextual scripture-based questioning.
+
+--------------------------------------------------------------------------------
+3. SCRIPTURE MODULE (READ BIBLE)
+--------------------------------------------------------------------------------
+Feature: A dual-language text reading interface.
+Use:
+- Navigate to "Read Bible" from the sidebar.
+- Read passages (like John 3).
+- Using the dropdown at the top right, you can toggle the text between English (ESV), Tamil (BSI), or Dual Language (viewing both side-by-side).
+
+--------------------------------------------------------------------------------
+4. SERMON ARCHITECT
+--------------------------------------------------------------------------------
+Feature: A tool to automatically generate theological sermon outlines.
+Use:
+- Navigate to "Sermon Builder" from the sidebar.
+- In the input field, type a topic (e.g., "Hope") or a verse.
+- Click "Generate Sermon Outline".
+- The system simulates AI generation and produces a structured 4-part sermon (Introduction, Key Points, Practical Application, Conclusion) based on your input.
+
+--------------------------------------------------------------------------------
+5. SERVICE planner (CSI - CHURCH OF SOUTH INDIA)
+--------------------------------------------------------------------------------
+Feature: A structured template for planning traditional CSI church services.
+Use:
+- Navigate to "Service Orders".
+- View the 9-part standard CSI flow (Invocation, Scripture Reading, Psalm, Sermon, Offering, Benediction, etc.).
+- Click the "Export PDF" button (which simulates exporting the order of service into a printable format).
+
+--------------------------------------------------------------------------------
+6. COMMUNITY GROUP CHAT
+--------------------------------------------------------------------------------
+Feature: Simulated small-group discussion rooms.
+Use:
+- Click the "Community" dropdown in the sidebar.
+- Click "Create Group". The app generates a random 6-character alphanumeric room code for you and places you in a simulated text chat room.
+- Alternatively, click "Join Group" and paste an existing room code to enter it.
+- In the room, simulated "bot" participants will periodically post messages reflecting on scripture, simulating a living faith community. You can chat alongside them.
+
+--------------------------------------------------------------------------------
+7. ACCOUNTABILITY & GROWTH TRACKER
+--------------------------------------------------------------------------------
+Feature: Features to build spiritual discipline.
+Use:
+- Navigate to "Accountability".
+- View your simulated "Streak" (e.g., a 🔥 icon counting your continuous days of engagement).
+- Keep a personal, private Prayer Log using the text area provided.
+
+--------------------------------------------------------------------------------
+8. DEVOTIONAL PLANS
+--------------------------------------------------------------------------------
+Feature: Structured Bible reading schedules.
+Use:
+- Navigate to "Reading Plans".
+- Browse pre-configured reading plans (7-Day Journey, 30-Day Deep Dive, 90-Day Challenge).
+- Track your visual percentage progress for each plan as you complete daily goals.
+
+--------------------------------------------------------------------------------
+9. WORSHIP HUB
+--------------------------------------------------------------------------------
+Feature: A library of categorized music.
+Use:
+- Navigate to "Worship Songs".
+- View organized lists of classic Praise Songs, Worship Anthems, and a dedicated tab for Tamil Christian Songs.
+
+--------------------------------------------------------------------------------
+10. SETTINGS & HELP
+--------------------------------------------------------------------------------
+Feature: Global configuration tools.
+Use:
+- Navigate to "Settings" to switch the generic App Language (English vs Tamil dropdown).
+- Toggle Theme Mode preferences. 
+- Navigate to "Help Center" to view accordion-style frequently asked questions (FAQs) regarding how RhemaLight AI functions.

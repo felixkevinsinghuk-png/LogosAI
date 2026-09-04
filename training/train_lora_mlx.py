@@ -3,7 +3,7 @@ train_lora_mlx.py
 =================
 Executes Parameter-Efficient Fine-Tuning (LoRA) on Apple Silicon using MLX.
 
-This script wraps the 'mlx_lm.lora' module to train the LogosAI assistant
+This script wraps the 'mlx_lm.lora' module to train the RhemaLight AI assistant
 on the synthetically generated theological dataset. It is optimized for 
 Mac unified memory (MPS).
 """
@@ -37,7 +37,7 @@ def run_training():
         "--grad-checkpoint"
     ]
     
-    print("--- LogosAI PEFT Training (MLX/Apple Silicon) ---")
+    print("--- RhemaLight AI PEFT Training (MLX/Apple Silicon) ---")
     print(f"Base Model: {base_model}")
     print(f"Data Path:  {data_path}")
     print(f"Output:     {output_path}\n")

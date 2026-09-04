@@ -10,7 +10,8 @@ Model file (GGUF format) must be placed in the 'models/' directory.
 See README.md for download instructions.
 """
 
-from __future__ import annotations
+from typing import List, Generator, Optional, Tuple, Union
+import mlx.core as mx
 import os
 import gc
 import sys
@@ -35,7 +36,7 @@ _inference_lock = threading.Lock()
 _load_lock = threading.Lock()
 
 
-def _find_model_path() -> tuple[str, str] | None:
+def _find_model_path() -> Optional[Tuple[str, str]]:
     """
     Finds either the MLX fused model or a GGUF file.
     Returns: (path, type) or None

@@ -30,7 +30,7 @@ def fuse_model():
         "--save-path", save_path
     ]
     
-    print("--- LogosAI Model Fusion ---")
+    print("--- RhemaLight AI Model Fusion ---")
     print(f"Base Model:    {base_model}")
     print(f"Adapter Path:  {adapter_path}")
     print(f"Saving to:     {save_path}\n")
@@ -41,7 +41,7 @@ def fuse_model():
         print("\nFusion completed successfully!")
         print(f"Your fused model is saved in: {save_path}")
         print("\nNEXT STEP (Final GGUF Conversion):")
-        print("To use this in the LogosAI backend, you must convert it to GGUF format.")
+        print("To use this in the RhemaLight AI backend, you must convert it to GGUF format.")
         print("If you have llama.cpp installed, run:")
         print(f"python3 llama.cpp/convert.py {save_path} --outfile {save_path}/model.gguf --outtype q4_k_m")
     except subprocess.CalledProcessError as e:

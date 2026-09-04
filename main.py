@@ -1,5 +1,5 @@
 """
-LogosAI — Main Entry Point
+RhemaLight AI — Main Entry Point
 ===========================
 Starts the FastAPI web server and performs first-run initialization.
 
@@ -29,7 +29,7 @@ def run_startup_checks() -> None:
     Download data and index the Bible if this is the first run.
     Skips any step that has already been completed.
     """
-    print("\n[LogosAI] Bible Contextual AI Assistant")
+    print("\n[RhemaLight AI] Bible Contextual AI Assistant")
 
     # Step 1: Bible data
     print("\n[Setup] Checking Bible dataset...")
@@ -78,8 +78,8 @@ def run_startup_checks() -> None:
     except Exception as e:
         print(f"[Setup] ⚠ Could not check model: {e}")
 
-    print("\n[LogosAI] Web server: http://localhost:8000")
-    print("[LogosAI] Press Ctrl+C to stop.\n")
+    print("\n[RhemaLight AI] Web server: http://localhost:8000")
+    print("[RhemaLight AI] Press Ctrl+C to stop.\n")
 
 
 def main() -> None:

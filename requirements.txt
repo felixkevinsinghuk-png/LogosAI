@@ -1,4 +1,4 @@
-# LogosAI — Python Dependencies
+# RhemaLight AI — Python Dependencies
 # ================================
 # All packages listed here are free and open-source.
 # Install with:  pip install -r requirements.txt
@@ -24,5 +24,8 @@ chromadb>=0.5.0           # Persistent vector database for Bible verse embedding
 
 # ── HTTP Client (for one-time data downloads) ─────────────────────────────────
 requests>=2.31.0          # Downloads Bible JSON and Strong's lexicon on first run
-mlx>=0.11.0
-mlx-lm>=0.11.0
+mlx>=0.11.0               # MLX frameworks for Apple Silicon
+mlx-lm>=0.11.0            # MLX language models
+PyJWT>=2.8.0              # Supabase JWT token validation
+python-dotenv>=1.0.1      # Environment variable loading
+supabase>=2.4.0           # Supabase Python client for DB operations

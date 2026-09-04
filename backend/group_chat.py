@@ -4,6 +4,7 @@ Handles WebSocket connections and isolated room logic for the Group Chat feature
 Rooms are identified exclusively by a 6-character alphanumeric code.
 """
 
+from typing import Dict, List, Optional, Union
 import random
 import string
 from fastapi import WebSocket
@@ -57,7 +58,7 @@ def validate_room(code: str) -> bool:
     return code.upper() in _rooms
 
 
-def get_room_info(code: str) -> dict | None:
+def get_room_info(code: str) -> Optional[dict]:
     """
     Returns information about the room including participant count.
     """

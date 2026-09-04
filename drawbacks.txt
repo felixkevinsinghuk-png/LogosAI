@@ -1,0 +1,211 @@
+# LogosAI — Interactive CSI Order of Service (Clickable Sections)
+
+## Objective
+
+Build a fully interactive **Order of Service module** where:
+
+- Each service element is shown as a **clickable section**
+- On click → it expands and displays its **full content**
+- Works for:
+  - English services
+  - Tamil services
+  - Special services (e.g., Wedding)
+
+The system must be structured, reusable, and faithful to CSI traditions.
+
+---
+
+## 1. CORE FUNCTIONALITY (CRITICAL)
+
+Each service item should behave like:
+
+### Default View:
+- Show only the section title
+
+Example:
+- Apostles’ Creed
+- Confession
+- Psalm Reading
+- Gospel Reading
+
+---
+
+### On Click:
+Expand and display FULL content
+
+Example:
+
+User clicks → "Apostles’ Creed"
+
+System shows:
+
+"I believe in God, the Father Almighty,
+Maker of heaven and earth..."
+
+---
+
+## 2. APPLY THIS TO ALL SECTIONS
+
+The following must be clickable and expandable:
+
+- Invocation
+- Opening Prayer
+- Confession
+- Absolution
+- Apostles’ Creed
+- Lord’s Prayer
+- Scripture Readings (OT, Psalm, Epistle, Gospel)
+- Sermon
+- Offering Prayer
+- Intercession
+- Benediction
+
+---
+
+## 3. CONTENT SOURCE REQUIREMENTS
+
+### English Service (Primary References)
+
+Use structure and wording based on:
+
+- CSI English Order of Service (Reference 1)
+- CSI English Order of Service (Reference 2)
+
+IMPORTANT:
+- Do NOT hardcode random text
+- Maintain authenticity of CSI liturgy
+- Structure must match real church flow
+
+---
+
+### Tamil Service (CRITICAL)
+
+Use Tamil content from:
+
+- Goldwyn Sudhakar website → "ஆராதனை முறைகள்"
+
+Requirement:
+- Include proper Tamil liturgical text
+- Maintain correct script (no translation errors)
+
+---
+
+### Wedding Service (SPECIAL CASE)
+
+Use:
+
+- CSI Wedding Order (Tamil)
+
+Include sections like:
+- Marriage declaration
+- Vows
+- Ring exchange
+- Blessing
+
+---
+
+## 4. DATA STRUCTURE (IMPORTANT)
+
+Store service as structured JSON:
+
+Example:
+
+{
+  "section": "Apostles Creed",
+  "language": "EN",
+  "content": "Full text here...",
+  "type": "static"
+}
+
+For scripture-based sections:
+
+{
+  "section": "Gospel Reading",
+  "reference": "John 3:16",
+  "text_en": "...",
+  "text_ta": "...",
+  "type": "scripture"
+}
+
+---
+
+## 5. UI / UX BEHAVIOR
+
+### Accordion Style (Recommended):
+
+- Only one section open at a time (optional)
+- Smooth expand/collapse animation
+
+### Visual Design:
+
+- Section title → bold
+- Expand icon (arrow or +)
+- Open state → highlighted background
+
+---
+
+## 6. LANGUAGE SUPPORT
+
+Allow user to switch:
+
+- English
+- Tamil
+- Bilingual
+
+### Bilingual Mode:
+- Show both English + Tamil content together
+
+---
+
+## 7. SCRIPTURE INTEGRATION
+
+For reading sections:
+
+- Automatically fetch verses from Bible dataset
+- Display:
+  - Reference
+  - Full verse text
+  - Language toggle support
+
+---
+
+## 8. REUSABILITY
+
+System must support:
+
+- Sunday Service
+- Special Service (Wedding, Funeral, etc.)
+- Custom Service Plan (user-created)
+
+---
+
+## 9. SEARCH / QUICK NAVIGATION (OPTIONAL)
+
+- Allow user to jump to section
+- Example:
+  - Search "Creed"
+  - Scroll to Apostles’ Creed
+
+---
+
+## 10. VALIDATION RULES
+
+Ensure:
+
+- No missing sections
+- Proper order maintained
+- Content matches CSI tradition
+- Tamil text properly rendered
+
+---
+
+## 11. EXPECTED RESULT
+
+The system should:
+
+- Display full Order of Service
+- Allow users to click any section
+- Instantly show full liturgical content
+- Support English + Tamil
+- Include wedding service structure
+- Maintain real CSI format and authenticity

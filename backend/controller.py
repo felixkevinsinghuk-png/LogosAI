@@ -17,6 +17,7 @@ Pipeline sequence:
 import re
 import uuid
 import threading
+from typing import Optional, Union, Dict, List
 from backend.query_processor import process_query
 from backend.context_retrieval import retrieve_context, format_passages_for_display
 from backend.prompt_builder import build_prompt, build_simple_prompt
@@ -53,7 +54,7 @@ def _build_canned_response(canned_text: str, conversation_id: str, query: str) -
     }
 
 
-def handle_question(user_input: str, top_k: int = 5, conversation_id: str | None = None) -> dict:
+def handle_question(user_input: str, top_k: int = 5, conversation_id: Optional[str] = None) -> dict:
     """
     Process a user's Bible question through the full RAG pipeline
     and return a structured response.
@@ -110,7 +111,7 @@ def handle_question(user_input: str, top_k: int = 5, conversation_id: str | None
         # ── Gate 2: Greeting Fast-Path ─────────────────────────────────────────
         if check_text in greetings:
             print("[Controller] Simple greeting detected. Returning fast response.")
-            response = "Hello! I am LogosAI, your Bible contextual assistant. How can I help you study the Scriptures today?"
+            response = "Hello! I am RhemaLight AI, your Bible contextual assistant. How can I help you study the Scriptures today?"
             history = _conversations.setdefault(conversation_id, [])
             history.append({"role": "user", "content": user_input})
             history.append({"role": "assistant", "content": response})

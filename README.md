@@ -1,4 +1,4 @@
-# LogosAI — Bible Contextual AI Assistant
+# RhemaLight AI — Bible Contextual AI Assistant
 
 A locally-running Bible AI assistant powered by **Mistral-7B**. Provides contextual explanations of Bible passages with original Hebrew and Greek language meaning — completely offline, zero cost.
 
@@ -58,7 +58,7 @@ Download page: https://huggingface.co/TheBloke/Mistral-7B-Instruct-v0.1-GGUF
 
 Place the downloaded `.gguf` file in the `models/` directory:
 ```
-LogosAI/
+RhemaLight AI/
 └── models/
     └── mistral-7b-instruct-v0.1.Q4_K_M.gguf   ← here
 ```
@@ -86,7 +86,7 @@ Visit: **http://localhost:8000**
 ## Project Structure
 
 ```
-LogosAI/
+RhemaLight AI/
 ├── main.py                    # Entry point — run this to start
 ├── requirements.txt
 ├── frontend/

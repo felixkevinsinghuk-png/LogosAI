@@ -50,3 +50,7 @@ verification_result.txt
 training/adapters/
 training/logosai-fused/
 
+# Large deployment artifacts
+*.zip
+cpanel_deploy/
+

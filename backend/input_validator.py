@@ -82,7 +82,7 @@ _BIBLE_KEYWORDS = {
 
     # Original languages
     "hebrew", "greek", "aramaic", "strongs", "septuagint", "Torah",
-    "logos", "agape", "pneuma", "kyrios",
+    "logos", "agape", "pneuma", "kyrios", "love", "mercy", "compassion"
 }
 
 # ── Non-Biblical Domain Indicators ───────────────────────────────────────────

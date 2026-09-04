@@ -1,10 +1,10 @@
 # Ngrok & Server Management Guide
 
-This guide explains how to start, stop, and troubleshoot the LogosAI server and `ngrok` tunnel, especially when encountering the "Address already in use" error.
+This guide explains how to start, stop, and troubleshoot the RhemaLight AI server and `ngrok` tunnel, especially when encountering the "Address already in use" error.
 
 ## 1. Starting the System
 
-### Step A: Start the LogosAI Server
+### Step A: Start the RhemaLight AI Server
 Always start the backend server first.
 ```bash
 # Activate the environment
@@ -25,7 +25,7 @@ ngrok http 8000
 
 ## 2. Terminating the System
 
-### Stop LogosAI
+### Stop RhemaLight AI
 Press `Ctrl + C` in the terminal where `main.py` is running.
 
 ### Stop Ngrok

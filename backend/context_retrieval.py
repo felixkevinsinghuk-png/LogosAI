@@ -8,6 +8,7 @@ It bridges the user's question to the Bible knowledge base before
 the prompt is built and passed to the language model.
 """
 
+from typing import List, Dict, Optional, Union
 from backend.query_processor import process_query
 from vector_store.vector_db import search, search_articles
 from database.original_language import get_language_notes
@@ -81,13 +82,13 @@ def retrieve_context(user_question: str, top_k: int = 5, score_threshold: float 
             end_v = v
             
             if prev_v:
-                texts.append(prev_v["t"])
+                texts.append(prev_v["text"])
                 start_v = v - 1
                 
             texts.append(p["text"])
             
             if next_v:
-                texts.append(next_v["t"])
+                texts.append(next_v["text"])
                 end_v = v + 1
                 
             if start_v != end_v:
@@ -118,7 +119,7 @@ def retrieve_context(user_question: str, top_k: int = 5, score_threshold: float 
     }
 
 
-def format_passages_for_display(passages: list[dict]) -> str:
+def format_passages_for_display(passages: List[Dict]) -> str:
     """
     Format a list of retrieved Bible passages into a readable string.
 

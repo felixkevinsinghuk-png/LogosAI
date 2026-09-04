@@ -11,17 +11,21 @@ Endpoints:
 Static files for the frontend are served from the 'frontend/' directory.
 """
 
-from fastapi import FastAPI, HTTPException, WebSocket, WebSocketDisconnect
+from typing import Optional, List, Dict, Any
+from fastapi import FastAPI, HTTPException, WebSocket, WebSocketDisconnect, Depends
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse, JSONResponse, StreamingResponse
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 import os
 
+from backend.core.security import get_current_user
+
 from backend.controller import handle_question, handle_question_stream
 from backend.llm_engine import is_model_available
 from vector_store.vector_db import is_indexed
 from backend.group_chat import create_room, validate_room, manager, get_room_info
+from backend.routers import sermon_routes, history_routes, bible_routes, song_routes, plan_routes, streak_routes, profile_routes, notification_routes
 
 # Resolve path to the frontend directory
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
@@ -29,27 +33,44 @@ FRONTEND_DIR = os.path.join(BASE_DIR, "frontend")
 
 # FastAPI app initialization
 app = FastAPI(
-    title="LogosAI — Bible Contextual Assistant",
+    title="RhemaLight AI — Bible Contextual Assistant",
     description="A locally-running RAG-based Bible AI assistant using Mistral-7B.",
     version="1.0.0"
 )
 
+# Register routers
+app.include_router(sermon_routes.router)
+app.include_router(history_routes.router)
+app.include_router(bible_routes.router)
+app.include_router(song_routes.router)
+app.include_router(plan_routes.router)
+app.include_router(streak_routes.router)
+app.include_router(profile_routes.router)
+app.include_router(notification_routes.router)
+from backend.routers import service_routes, playlist_routes
+app.include_router(service_routes.router)
+app.include_router(playlist_routes.router)
+
 # CORS middleware
-# Allows the frontend (served on the same origin) and local dev tools to connect
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],          # In production, restrict this
+    allow_origins=[
+        "http://localhost:8000",
+        "http://127.0.0.1:8000",
+        "http://localhost:5173",  # Common Vite port
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
 # Static file serving
-# Mount the frontend directory so HTML, CSS, and JS are served
-if os.path.isdir(FRONTEND_DIR):
+# Mount the frontend/static directory so CSS, and JS are served under /static
+STATIC_DIR = os.path.join(FRONTEND_DIR, "static")
+if os.path.isdir(STATIC_DIR):
     app.mount(
         "/static",
-        StaticFiles(directory=FRONTEND_DIR),
+        StaticFiles(directory=STATIC_DIR),
         name="static"
     )
 
@@ -57,20 +78,18 @@ if os.path.isdir(FRONTEND_DIR):
 async def startup_event():
     """
     Preload models into memory when the server starts.
-    This prevents the very first chat request from taking 10+ seconds
-    just to load the 4GB LLM and embedding model from disk.
     """
-    from backend.llm_engine import load_model, is_model_available
-    from vector_store.embedder import _get_model
-    from vector_store.vector_db import is_indexed
+    # Disabling preload for debugging
+    pass
+    # from backend.llm_engine import load_model, is_model_available
+    # from vector_store.embedder import _get_model
+    # from vector_store.vector_db import is_indexed
 
-    if is_indexed():
-        # Warm up the embedding model
-        _get_model()
+    # if is_indexed():
+    #     _get_model()
     
-    if is_model_available():
-        # Load Mistral-7B into memory
-        load_model()
+    # if is_model_available():
+    #     load_model()
 
 
 # Request / Response Models
@@ -84,7 +103,7 @@ class ChatRequest(BaseModel):
         description="The Bible question to answer.",
         example="What does John 3:16 mean?"
     )
-    conversation_id: str | None = Field(
+    conversation_id: Optional[str] = Field(
         default=None,
         description="Unique identifier for the conversational session. If none is provided, a new session is started."
     )
@@ -132,39 +151,31 @@ async def serve_frontend():
     return FileResponse(index_path)
 
 
-@app.post("/chat", response_model=ChatResponse)
-async def chat(request: ChatRequest):
-    """
-    Process a Bible question through the full RAG pipeline.
-
-    Accepts a user question, retrieves relevant Bible context via
-    semantic search, and generates an answer using the local Mistral-7B model.
-
-    Args:
-        request (ChatRequest): Request body with 'question' and optional 'top_k'.
-
-    Returns:
-        ChatResponse: Generated answer with retrieved passages and language notes.
-    """
+@app.post("/chat")
+async def chat(request: ChatRequest, current_user: str = Depends(get_current_user)):
     try:
         result = handle_question(
             request.question,
             top_k=request.top_k,
             conversation_id=request.conversation_id
         )
+        return {
+            "success": True,
+            "data": {
+                "answer": result["answer"],
+                "query": result["query"],
+                "passages": result["passages"],
+                "language_notes": result.get("language_notes", ""),
+                "conversation_id": result["conversation_id"]
+            },
+            "error": None
+        }
     except Exception as e:
-        raise HTTPException(
-            status_code=500,
-            detail=f"Error processing question: {str(e)}"
-        )
-
-    return ChatResponse(
-        answer=result["answer"],
-        query=result["query"],
-        passages=[PassageResult(**p) for p in result["passages"]],
-        language_notes=result.get("language_notes", ""),
-        conversation_id=result["conversation_id"]
-    )
+        return {
+            "success": False,
+            "data": None,
+            "error": {"message": str(e)}
+        }
 
 
 # /chat/stream removed as per new non-streaming requirement.
@@ -197,11 +208,39 @@ async def system_status():
         "embedding_model": "all-MiniLM-L6-v2"
     })
 
+@app.get("/api/diag")
+async def diagnostic():
+    """Diagnostic endpoint to check environment and data paths."""
+    from backend.core.config import settings
+    from database.bible_loader import DATA_DIR, VERSION_SOURCES
+    
+    bible_status = {}
+    for code in VERSION_SOURCES:
+        path = os.path.join(DATA_DIR, f"{code}.json")
+        bible_status[code] = {
+            "path": path,
+            "exists": os.path.exists(path),
+            "size": os.path.getsize(path) if os.path.exists(path) else 0
+        }
+
+    return {
+        "env": {
+            "SUPABASE_URL": settings.SUPABASE_URL,
+            "SUPABASE_SERVICE_ROLE_KEY_SET": bool(settings.SUPABASE_SERVICE_ROLE_KEY),
+            "SUPABASE_JWT_SECRET_SET": bool(settings.SUPABASE_JWT_SECRET),
+            "SCRIPTURE_DATA_PATH_SET": settings.SCRIPTURE_DATA_PATH
+        },
+        "bible_loader": {
+            "DATA_DIR": DATA_DIR,
+            "files": bible_status
+        },
+        "cwd": os.getcwd()
+    }
 
 # --- Group Chat Routes ---
 
 @app.post("/group/create")
-async def create_group(request: GroupCreateRequest):
+async def create_group(request: GroupCreateRequest, current_user: str = Depends(get_current_user)):
     """Creates a new isolated chat group and returns a unique 6-character alphanumeric room code."""
     group_name = request.group_name.strip()
     if not group_name:
