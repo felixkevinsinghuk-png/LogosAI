@@ -1630,8 +1630,6 @@ async function sendMessage() {
   const typingId = appendTypingIndicator();
   setLoading(true);
 
-  const apiKey = 'AIzaSyCXnSsW2M-fu5ZVQrtFKZlhIJ4lK-iyT50';
-
   try {
       const sysPrompt = "You are RhemaLight AI, a deeply theological and compassionate Bible study assistant. Provide biblical context, cite scriptures, and explain passages clearly. Use Markdown for formatting.";
       
@@ -1650,7 +1648,8 @@ async function sendMessage() {
         contents: chatHistory
       };
 
-      const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`, {
+      // Proxy the request through the backend to avoid exposing the API key
+      const response = await fetch('/api/gemini/chat', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(payload)

@@ -237,6 +237,24 @@ async def diagnostic():
         "cwd": os.getcwd()
     }
 
+@app.post("/api/gemini/chat")
+async def gemini_chat_proxy(payload: dict):
+    """Proxy endpoint for frontend Gemini requests to avoid exposing the API key."""
+    import requests
+    import os
+    
+    api_key = os.getenv("GEMINI_API_KEY")
+    if not api_key:
+        raise HTTPException(status_code=500, detail="GEMINI_API_KEY is not configured on the server.")
+    
+    url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key={api_key}"
+    try:
+        response = requests.post(url, json=payload, timeout=30)
+        response.raise_for_status()
+        return response.json()
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
 # --- Group Chat Routes ---
 
 @app.post("/group/create")
